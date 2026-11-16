@@ -8,7 +8,7 @@ From left to right:
 
 - **Model** and reasoning effort
 - **Context window**: tokens in use and a bar that goes from green through amber to red
-- **Usage limits** for 5 hours and 7 days, plus the time left until reset once a limit reaches 70 %
+- **Usage limits** for 5 hours and 7 days, plus the time left until reset once a limit reaches 70 % (adjustable for each limit or shown always)
 - **Git branch** of the working directory (short commit hash when detached)
 
 As the context window fills, the bar runs into red, and a usage limit near its end shows the time left until it resets:
@@ -52,7 +52,7 @@ The command is long because Python starts anew on every update, so it is built t
 
 ## Customizing
 
-The `SETTINGS` section near the top of the script holds the bar width, the gradient colors, the icons and the percentage from which the reset time is shown. To drop or reorder segments, edit the `SEGMENTS` tuple.
+The `SETTINGS` section near the top of the script holds the bar width, the gradient colors, the icons and, for each usage limit, the percentage from which the reset time is shown (`RESET_TIME_FROM_5H`, `RESET_TIME_FROM_7D`; `0` shows it always). To drop or reorder segments, edit the `SEGMENTS` tuple.
 
 ## Notes
 

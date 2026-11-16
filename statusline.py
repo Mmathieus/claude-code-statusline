@@ -9,7 +9,7 @@
 # Segments (left to right)
 #   - Model and reasoning effort
 #   - Context window: tokens in use and a bar that goes from green through amber to red
-#   - 5-hour and 7-day usage limits, plus the time left until reset once a limit reaches 70 %
+#   - 5-hour and 7-day usage limits, plus the time left until reset once a limit reaches 70 % (set apart for each limit or always)
 #   - Git branch of the working directory (short commit hash when detached)
 # A segment without data is left out. A segment that fails shows "<name>: err" instead, so one problem never blanks the whole line.
 #
@@ -64,7 +64,9 @@ from itertools import pairwise
 
 BAR_WIDTH = 10  # cells in the context bar
 BAR_FILLED, BAR_EMPTY = "█", "░"
-RESET_TIME_FROM = 70  # show the time until reset once a usage limit reaches this %
+# Show the time until reset once a usage limit reaches this %; 0 shows it always.
+RESET_TIME_FROM_5H = 70
+RESET_TIME_FROM_7D = 70
 
 MODEL_RGB = (215, 119, 87)  # Claude orange
 
@@ -232,13 +234,13 @@ def context_segment(session: dict) -> list[str]:
 def limit_segments(session: dict) -> list[str]:
     segments = []
     limits = session.get("rate_limits") or {}
-    for key, label in (("five_hour", "5h"), ("seven_day", "7d")):
+    for key, label, show_from in (("five_hour", "5h", RESET_TIME_FROM_5H), ("seven_day", "7d", RESET_TIME_FROM_7D)):
         limit = limits.get(key) or {}
         if limit.get("used_percentage") is None:
             continue
         percent = round_half_up(limit["used_percentage"])  # compare the number shown
         text = dim(label) + " " + paint(fill_color(percent), f"{percent}%")
-        if percent >= RESET_TIME_FROM and limit.get("resets_at"):
+        if percent >= show_from and limit.get("resets_at"):
             time_left = format_time_left(limit["resets_at"])
             if time_left:
                 text += " " + dim(f"{TIMER_ICON} {time_left}")
